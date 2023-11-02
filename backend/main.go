@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// makling a default board that can be used on init and when starting a new game
+
 var defaultBoard = [10][10]string{
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
@@ -19,6 +21,8 @@ var defaultBoard = [10][10]string{
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
 }
+
+// struct that will keep track of game state
 
 type battleship struct {
 	Board [10][10]string `json:"board"`
@@ -46,9 +50,10 @@ var todos = []todo{
 	{ID: "3", Item: "Walk Dog", Completed: false},
 }
 
+/*
 func getTodos(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, todos)
-}
+}*/
 
 func addTodo(context *gin.Context) {
 	var newTodo todo
