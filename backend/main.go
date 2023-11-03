@@ -8,7 +8,6 @@ import (
 )
 
 // makling a default board that can be used on init and when starting a new game
-
 var defaultBoard = [10][10]string{
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
@@ -22,27 +21,69 @@ var defaultBoard = [10][10]string{
 	{"*", "*", "*", "*", "*", "*", "*", "*", "*", "*"},
 }
 
-// struct that will keep track of game state
-
-type battleship struct {
-	Board [10][10]string `json:"board"`
+// struct that will keep track of game boards
+type battleshipBoard struct {
+	PlayerBoard [10][10]string `json:"playerboard"`
+	AiBoard     [10][10]string `json:"aiboard"`
 }
 
-type todo struct {
-	ID        string `json:"id"`
-	Item      string `json:"item"`
-	Completed bool   `json:"completed"`
+// Structure to hold the player ship information
+type playership struct {
+	ShipType string `json:"shiptype"`
+	Bowx     int    `json:"bowx"`
+	Bowy     int    `json:"bowy"`
+	Sternx   int    `json:"sternx"`
+	Sterny   int    `json:"sterny"`
+	Sunk     bool   `json:"sunk"`
+}
+type aiship struct {
+	ShipType string `json:"shiptype"`
+	Bowx     int    `json:"bowx"`
+	Bowy     int    `json:"bowy"`
+	Sternx   int    `json:"sternx"`
+	Sterny   int    `json:"sterny"`
+	Sunk     bool   `json:"sunk"`
+}
+
+// on the init of the program we will set the game boards to a default state
+var battleships = []battleshipBoard{
+	{PlayerBoard: defaultBoard, AiBoard: defaultBoard},
+}
+
+// init empty structs to track the ships
+var playerships = []playership{}
+var aiships = []aiship{}
+
+func addPlayerShip(context *gin.Context) {
+	var newShip playership
+
+	if err := context.BindJSON(&newShip); err != nil {
+		return
+	}
+
+	playerships = append(playerships, newShip)
+
+	context.IndentedJSON(http.StatusCreated, playerships)
 }
 
 func getCurrentBoard(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, battleships)
 }
 
-var battleships = []battleship{
-	{Board: defaultBoard},
+func main() {
+	router := gin.Default()
+	router.GET("/getBoard", getCurrentBoard)
+	router.GET("/todos/:id", getTodo)
+	router.POST("/addShip/", addTodo)
+	router.Run("localhost:9090")
 }
 
 // Every thing below here is no longer needed but is still being used for notes
+type todo struct {
+	ID        string `json:"id"`
+	Item      string `json:"item"`
+	Completed bool   `json:"completed"`
+}
 
 var todos = []todo{
 	{ID: "1", Item: "Clean Room", Completed: false},
@@ -86,12 +127,4 @@ func getTodo(context *gin.Context) {
 	}
 
 	context.IndentedJSON(http.StatusOK, todo)
-}
-
-func main() {
-	router := gin.Default()
-	router.GET("/getBoard", getCurrentBoard)
-	router.GET("/todos/:id", getTodo)
-	router.POST("/todo", addTodo)
-	router.Run("localhost:9090")
 }
