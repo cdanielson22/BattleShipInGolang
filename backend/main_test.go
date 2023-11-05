@@ -23,7 +23,7 @@ func Test_getCurrentBoard(t *testing.T) {
 	}
 }
 
-func Test_addPlayerShip(t *testing.T) {
+func Test_addShip(t *testing.T) {
 	type args struct {
 		context *gin.Context
 	}
@@ -35,7 +35,7 @@ func Test_addPlayerShip(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addPlayerShip(tt.args.context)
+			addShip(tt.args.context)
 		})
 	}
 }

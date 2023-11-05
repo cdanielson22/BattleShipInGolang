@@ -28,21 +28,14 @@ type battleshipBoard struct {
 }
 
 // Structure to hold the player ship information
-type playership struct {
+type ship struct {
 	ShipType string `json:"shiptype"`
 	Bowx     int    `json:"bowx"`
 	Bowy     int    `json:"bowy"`
 	Sternx   int    `json:"sternx"`
 	Sterny   int    `json:"sterny"`
 	Sunk     bool   `json:"sunk"`
-}
-type aiship struct {
-	ShipType string `json:"shiptype"`
-	Bowx     int    `json:"bowx"`
-	Bowy     int    `json:"bowy"`
-	Sternx   int    `json:"sternx"`
-	Sterny   int    `json:"sterny"`
-	Sunk     bool   `json:"sunk"`
+	Player   string `json:"playerType"`
 }
 
 // on the init of the program we will set the game boards to a default state
@@ -51,19 +44,60 @@ var battleships = []battleshipBoard{
 }
 
 // init empty structs to track the ships
-var playerships = []playership{}
-var aiships = []aiship{}
+var ships = []ship{}
 
-func addPlayerShip(context *gin.Context) {
-	var newShip playership
+func checkShipOverlap(start int, end int, length int) bool {
+	return false
+}
+
+func validateShip(validShip ship) bool {
+	// first check if its with in the bounds of the board
+	// check if its horizonal or vertical
+	// then check if it touches other ships
+
+	if (validShip.Bowx < 0) || (validShip.Bowx > 9) {
+		return false
+	}
+	if (validShip.Bowy < 0) || (validShip.Bowy > 9) {
+		return false
+	}
+	if (validShip.Sternx < 0) || (validShip.Sternx > 9) {
+		return false
+	}
+	if (validShip.Sterny < 0) || (validShip.Sterny > 9) {
+		return false
+	}
+
+	if validShip.Bowx != validShip.Sternx {
+		// return checkShipOverlap()
+	} else {
+		// we have a vertical ship
+	}
+
+	return true
+}
+
+func addShipToBoard(shipToAdd ship) {
+
+}
+
+func addShip(context *gin.Context) {
+	var newShip ship
 
 	if err := context.BindJSON(&newShip); err != nil {
 		return
 	}
 
-	playerships = append(playerships, newShip)
+	ships = append(ships, newShip)
 
-	context.IndentedJSON(http.StatusCreated, playerships)
+	//I'll need to validate ships position and then add to board
+	// addShipToBoard(newShip)
+
+	context.IndentedJSON(http.StatusCreated, ships)
+}
+
+func getShips(context *gin.Context) {
+	context.JSON(http.StatusOK, ships)
 }
 
 func getCurrentBoard(context *gin.Context) {
@@ -73,8 +107,9 @@ func getCurrentBoard(context *gin.Context) {
 func main() {
 	router := gin.Default()
 	router.GET("/getBoard", getCurrentBoard)
+	router.GET("/getPlayerShips", getShips)
 	router.GET("/todos/:id", getTodo)
-	router.POST("/addShip/", addTodo)
+	router.POST("/addShip", addShip)
 	router.Run("localhost:9090")
 }
 
